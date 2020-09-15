@@ -1,0 +1,5 @@
+[jenkins-master]
+192.128.20.12
+
+[jenkins-slave]
+192.128.20.13

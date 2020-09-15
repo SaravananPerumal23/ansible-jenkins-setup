@@ -1,0 +1,77 @@
+---
+- name: Ensure dependencies are installed.
+  package:
+    name:
+      - curl
+      - initscripts
+      - "{{ 'libselinux-python' if ansible_python['version']['major'] < 3 else 'python3-libselinux' }}"
+    state: present
+
+- name: create jenkins group
+  group:
+    name: "{{ jenkins_group }}"
+    state: present
+  become: true
+
+- name: Add a jenkins user and add it to the docker group
+  user:
+    name: "{{ jenkins_user }}"
+    groups: "{{ jenkins_group }}"
+    append: yes
+    state: present
+  become: true
+
+- name: Create Swarm directory
+  file:
+    path: "{{ jenkins_home }}"
+    state: directory
+    mode: 0755
+  become: true
+
+- name: Download Jenkins Swarm Client
+  get_url:
+    url: "{{ jenkins_swarm_download_url }}"
+    dest: "{{ jenkins_home }}/swarm-client.jar"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_user }}"
+  become: true
+  register: swarm_jar
+  until: "'OK' in swarm_jar.msg or '304' in swarm_jar.msg or 'file already exists' in swarm_jar.msg"
+  retries: 5
+  delay: 10
+
+- name: Install swarm client script
+  template: src=templates/jenkins-swarm-client.tmpl dest=/etc/init.d/{{ jenkins_swarm_service_name }} mode=0700
+  notify:
+    - Restart Swarm Client Service-Linux
+
+- name: Ensure Jenkins is started and runs on startup.
+  service: name={{ jenkins_swarm_service_name }} state=restarted
+
+
+#
+# - name: Create Jenkins Swarm Init script
+#   template:
+#     src: templates/jenkins-swarm-client-redhat.init.j2
+#     dest: /etc/init.d/swarm-client
+#     mode: 0755
+#   notify:
+#     - Reload Systemd
+#     - Restart Swarm Client Service-Linux
+
+# - name: Unconditionally reboot the machine with all defaults
+#   reboot:
+
+# - name: Ubuntu - Start Jenkins Swarm Client Service
+#   service:
+#       name: "{{ jenkins_swarm_service_name }}"
+#       enabled: yes
+#       state: started
+#       # use: service
+#
+# - name: jenkins-swarm | Register machine to jenkins master
+#   shell: "nohup /etc/init.d/swarm-client"
+# #  sudo_user: "{{ jenkins_user }}"
+#   become_user: "{{ jenkins_user }}"
+#   tags: jenkins_swarm_setup
+#   become: true

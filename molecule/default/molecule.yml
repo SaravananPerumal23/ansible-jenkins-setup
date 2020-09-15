@@ -1,0 +1,26 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: jenkins-master
+    image: docker.io/pycontribs/centos:8
+    pre_build_image: true
+    published_ports:
+      - "8080:8080"
+      - "9999:9999"
+  - name: jenkins-slave
+    image: docker.io/pycontribs/centos:8
+    pre_build_image: true
+    # command: /sbin/init
+    # tmpfs:
+    #   - /run
+    #   - /tmp
+    # volumes:
+    #   - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: true
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

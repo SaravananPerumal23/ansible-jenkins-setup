@@ -1,0 +1,19 @@
+---
+# - name: Converge-JenkinsMaster
+#   hosts: jenkins-master
+#   tasks:
+#     - name: "Include java"
+#       include_role:
+#         name: "java"
+#     - name: "Include Jenkins"
+#       include_role:
+#         name: "jenkins-master"
+- name: Converge-JenkinsSlave
+  hosts: jenkins-slave
+  tasks:
+    - name: "Include java"
+      include_role:
+        name: "java"
+    - name: "Include Jenkins"
+      include_role:
+        name: "jenkins-slave"

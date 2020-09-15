@@ -1,0 +1,6 @@
+# chkconfig: - 99 10
+java -jar {{jenkins_home}}/swarm-client.jar \
+-name {{jenkins_slave_name}} -password {{jenkins_master_password}} \
+-username {{jenkins_master_username}} -fsroot {{jenkins_home}}/jenkins-slave \
+-master http://{{ jenkins_master_hostname }}:{{ jenkins_master_port }} \
+-disableSslVerification &> {{jenkins_home}}/swarm-client.log &
