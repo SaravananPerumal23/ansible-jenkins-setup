@@ -11,7 +11,7 @@
   group:
     name: "{{ jenkins_group }}"
     state: present
-  become: true
+  # become: true
 
 - name: Add a jenkins user and add it to the docker group
   user:
@@ -19,14 +19,14 @@
     groups: "{{ jenkins_group }}"
     append: yes
     state: present
-  become: true
+  # become: true
 
 - name: Create Swarm directory
   file:
     path: "{{ jenkins_home }}"
     state: directory
     mode: 0755
-  become: true
+  # become: true
 
 - name: Download Jenkins Swarm Client
   get_url:
@@ -34,7 +34,7 @@
     dest: "{{ jenkins_home }}/swarm-client.jar"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_user }}"
-  become: true
+  # become: true
   register: swarm_jar
   until: "'OK' in swarm_jar.msg or '304' in swarm_jar.msg or 'file already exists' in swarm_jar.msg"
   retries: 5
@@ -46,7 +46,7 @@
     - Restart Swarm Client Service-Linux
 
 - name: Ensure Jenkins is started and runs on startup.
-  service: name={{ jenkins_swarm_service_name }} state=restarted
+  service: name={{ jenkins_swarm_service_name }} state=started
 
 
 #

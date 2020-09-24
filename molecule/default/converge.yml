@@ -1,6 +1,6 @@
 ---
 # - name: Converge-JenkinsMaster
-#   hosts: jenkins-master
+#   hosts: jenkins-master-rhel8
 #   tasks:
 #     - name: "Include java"
 #       include_role:
@@ -8,8 +8,26 @@
 #     - name: "Include Jenkins"
 #       include_role:
 #         name: "jenkins-master"
+# - name: Converge-JenkinsSlave
+#   hosts: jenkins-slave-rhel8
+#   tasks:
+#     - name: "Include java"
+#       include_role:
+#         name: "java"
+#     - name: "Include Jenkins"
+#       include_role:
+#         name: "jenkins-slave"
+- name: Converge-JenkinsMaster
+  hosts: jenkins-master-centos
+  tasks:
+    - name: "Include java"
+      include_role:
+        name: "java"
+    - name: "Include Jenkins"
+      include_role:
+        name: "jenkins-master"
 - name: Converge-JenkinsSlave
-  hosts: jenkins-slave
+  hosts: jenkins-slave-centos
   tasks:
     - name: "Include java"
       include_role:

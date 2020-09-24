@@ -18,7 +18,7 @@
     enabled: yes
     state: restarted
   # register: swarm-client-started
-  become: true
+  # become: true
 
 # For Debian
 - name: Restart Swarm Client Service
