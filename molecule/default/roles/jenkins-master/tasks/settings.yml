@@ -17,6 +17,7 @@
     regexp: '^{{ item.option }}=\"\${{ item.option }} '
     line: '{{ item.option }}="${{ item.option }} {{ item.value }}"'
     state: present
+  become: yes
   with_items: "{{ jenkins_init_changes }}"
   register: jenkins_init_prefix
 
@@ -25,10 +26,14 @@
     dest: "{{ jenkins_init_file }}"
     regexp: '^JENKINS_HOME=.*'
     line: 'JENKINS_HOME={{ jenkins_home }}'
+  become: yes
   register: jenkins_home_config
 
 - name: Immediately restart Jenkins on init config changes.
-  service: name=jenkins state=restarted
+  service:
+    name: jenkins
+    state: restarted
+  become: yes
   when: jenkins_init_prefix.changed
   tags: ['skip_ansible_lint']
 
@@ -38,6 +43,7 @@
     dest: "{{ jenkins_init_file }}"
     regexp: '^{{ jenkins_http_port_param }}='
     line: '{{ jenkins_http_port_param }}={{ jenkins_http_port }}'
+  become: yes
   register: jenkins_http_config
 
 - name: Ensure jenkins_home {{ jenkins_home }} exists
@@ -55,7 +61,8 @@
     state: directory
     owner: "{{ jenkins_process_user }}"
     group: "{{ jenkins_process_group }}"
-    mode: 0775
+    mode: 0755
+  become: yes
 
 - name: Configure proxy config for Jenkins
   template:
@@ -73,7 +80,10 @@
   meta: flush_handlers
 
 - name: Immediately restart Jenkins on http or user changes.
-  service: name=jenkins state=restarted
+  service:
+    name: jenkins
+    state: restarted
+  become: yes
   when: >
     (jenkins_users_config is defined and jenkins_users_config.changed)
     or (jenkins_http_config is defined and jenkins_http_config.changed)

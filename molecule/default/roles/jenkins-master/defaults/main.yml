@@ -27,9 +27,6 @@ jenkins_plugins:
   - docker-plugin
   - docker-swarm
   - swarm
-#  - blueocean
-#  - name: influxdb
-#    version: "1.12.1"
 
 jenkins_plugins_state: present
 jenkins_plugin_updates_expiration: 86400

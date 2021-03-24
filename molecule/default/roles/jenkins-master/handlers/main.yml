@@ -1,6 +1,9 @@
 ---
 - name: restart jenkins
-  service: name=jenkins state=restarted
+  service:
+    name: jenkins
+    state: restarted
+  become: yes
 
 - name: configure default users
   template:
@@ -9,6 +12,7 @@
     owner: "{{ jenkins_process_user }}"
     group: "{{ jenkins_process_group }}"
     mode: 0775
+  become: yes
   register: jenkins_users_config
 
 - name: configure jnlp
@@ -18,4 +22,5 @@
     owner: "{{ jenkins_process_user }}"
     group: "{{ jenkins_process_group }}"
     mode: 0775
+  become: yes
   register: jenkins_users_config

@@ -1,31 +1,44 @@
 ---
+scenario:
+  name: default
 dependency:
   name: galaxy
 driver:
-  name: docker
+  name: vagrant
+  provider:
+    name: virtualbox
 platforms:
-  # - name: jenkins-master-rhel8
-  #   image: registry.access.redhat.com/ubi8/ubi-init
-  #   pre_build_image: true
-  #   published_ports:
-  #     - "8080:8080"
-  #     - "9999:9999"
-  #   # privileged: true
-  # - name: jenkins-slave-rhel8
-  #   image: registry.access.redhat.com/ubi8/ubi-init
-  #   pre_build_image: true
-    # privileged: true
-  - name: jenkins-master-centos
-    image: docker.io/pycontribs/centos:8
-    pre_build_image: true
-    published_ports:
-      - "8080:8080"
-      - "9999:9999"
-  - name: jenkins-slave-centos
-    image: docker.io/pycontribs/centos:8
-    pre_build_image: true
-    # privileged: true
+  - name: jenkins-master
+    box: bento/centos-8.2
+    instance_raw_config_args:
+      - "vm.network 'forwarded_port', guest: 8080, host: 8080"
+      - "vm.network 'forwarded_port', guest: 9999, host: 9999"
+    interfaces:
+      - auto_config: true
+        network_name: private_network
+        type: dhcp
+      - auto_config: false
+        network_name: private_network
+        type: dhcp
+      - auto_config: true
+        ip: 192.128.20.14
+        network_name: private_network
+        type: static
+  - name: jenkins-slave
+    box: bento/centos-8.2
+    interfaces:
+      - auto_config: true
+        network_name: private_network
+        type: dhcp
+      - auto_config: false
+        network_name: private_network
+        type: dhcp
+      - auto_config: true
+        ip: 192.128.20.15
+        network_name: private_network
+        type: static
 provisioner:
   name: ansible
+  log: true
 verifier:
   name: ansible

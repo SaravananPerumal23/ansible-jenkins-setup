@@ -11,14 +11,14 @@
     start_mode: auto
     state: started
 
-- name: Restart Swarm Client Service-Linux
-  # service: name={{ jenkins_swarm_service_name }} state=started enabled=yes
-  service:
-    name: "{{ jenkins_swarm_service_name }}"
-    enabled: yes
-    state: restarted
-  # register: swarm-client-started
-  # become: true
+# - name: Restart Swarm Client Service-Linux
+#   # service: name={{ jenkins_swarm_service_name }} state=started enabled=yes
+#   service:
+#     name: "{{ jenkins_swarm_service_name }}"
+#     enabled: yes
+#     state: restarted
+#   # register: swarm-client-started
+#   # become: true
 
 # For Debian
 - name: Restart Swarm Client Service
@@ -26,7 +26,7 @@
     name: "{{ jenkins_swarm_service_name }}"
     enabled: yes
     state: restarted
-  become: true
+  become: yes
 
 - name: Reload Systemd
   systemd:
@@ -35,4 +35,4 @@
     enabled: yes
     state: started
   when: ansible_service_mgr == "systemd"
-  become: true
+  become: yes

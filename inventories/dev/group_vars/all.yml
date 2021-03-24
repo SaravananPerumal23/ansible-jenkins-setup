@@ -1,4 +1,8 @@
 ---
 
-# ansible_user: vagrant
-# ansible_ssh_pass: vagrant
+ansible_user: vagrant
+ansible_ssh_pass: vagrant
+
+# proxy_environment:
+#   http_proxy: 'http://127.0.0.1:8383'
+#   https_proxy: 'http://127.0.0.1:8383'

@@ -1,6 +1,18 @@
 # ansible-jenkins-cluster
 Repo for the setting up Jenkins cluster using Ansible
 
+### Instructions for running this Playbook to setup Jenkins cluster
+  1. Update the Host IP addresses in inventories/dev/hosts file
+  2. Validate if the servers are accessible for ansible to run the scripts
+    ```
+    ansible -m ping
+    ```
+    For local instance specify 'ansible_connection=local' along with host IP address
+  3. Use command 'ansible-playbook jenkins.yml --check' to run the playbook in dry run mode
+
+
+
+
 ## Jenkins Setup Options
   1. Using Molecule- For Testing purpose
   2. Using Vagrant- For Local
@@ -9,6 +21,10 @@ Repo for the setting up Jenkins cluster using Ansible
 
 ### Using Molecule
   With the molecule.yml file, we have defined the platforms/instances need to run the Ansible roles. Use the below command to start with instance creation and then setting the Jenkins using the Ansible roles provided in Converge.yml file
+
+  Reference link to install all required modules for working with Ansible and molecule
+  https://www.trustedsec.com/blog/automation-testing-with-ansible-molecule-and-vagrant/
+
   ```
   molecule converge
   ```

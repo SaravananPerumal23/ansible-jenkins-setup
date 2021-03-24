@@ -6,12 +6,13 @@
       - initscripts
       - "{{ 'libselinux-python' if ansible_python['version']['major'] < 3 else 'python3-libselinux' }}"
     state: present
+  become: yes
 
 - name: create jenkins group
   group:
     name: "{{ jenkins_group }}"
     state: present
-  # become: true
+  become: yes
 
 - name: Add a jenkins user and add it to the docker group
   user:
@@ -19,14 +20,14 @@
     groups: "{{ jenkins_group }}"
     append: yes
     state: present
-  # become: true
+  become: yes
 
 - name: Create Swarm directory
   file:
     path: "{{ jenkins_home }}"
     state: directory
     mode: 0755
-  # become: true
+  become: yes
 
 - name: Download Jenkins Swarm Client
   get_url:
@@ -34,19 +35,30 @@
     dest: "{{ jenkins_home }}/swarm-client.jar"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_user }}"
-  # become: true
+  become: yes
   register: swarm_jar
   until: "'OK' in swarm_jar.msg or '304' in swarm_jar.msg or 'file already exists' in swarm_jar.msg"
   retries: 5
   delay: 10
 
+
 - name: Install swarm client script
-  template: src=templates/jenkins-swarm-client.tmpl dest=/etc/init.d/{{ jenkins_swarm_service_name }} mode=0700
+  template: src=templates/swarm-client.service.j2 dest=/etc/systemd/system/{{ jenkins_swarm_service_name }}.service mode=0700
   notify:
-    - Restart Swarm Client Service-Linux
+    - Restart Swarm Client Service
+  become: yes
+
+# To start with init.d
+# - name: Install swarm client script
+#   template: src=templates/jenkins-swarm-client.tmpl dest=/etc/init.d/{{ jenkins_swarm_service_name }} mode=0700
+#   notify:
+#     - Restart Swarm Client Service-Linux
 
 - name: Ensure Jenkins is started and runs on startup.
-  service: name={{ jenkins_swarm_service_name }} state=started
+  service:
+    name: "{{ jenkins_swarm_service_name }}"
+    state: started
+  become: yes
 
 
 #

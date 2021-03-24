@@ -29,6 +29,7 @@
     group: jenkins
     mode: 0440
   changed_when: false
+  become: yes
   register: get_result
   until: get_result is success
   retries: 3
@@ -38,6 +39,7 @@
   replace:
     path: "{{ jenkins_home }}/updates/default.json"
     regexp: "1d;$d"
+  become: yes
 
 - name: Install Jenkins plugins using password.
   jenkins_plugin:
@@ -52,6 +54,7 @@
     updates_url: "{{ jenkins_updates_url }}"
     url: "http://{{ jenkins_hostname }}:{{ jenkins_http_port }}{{ jenkins_url_prefix }}"
     with_dependencies: "{{ jenkins_plugins_install_dependencies }}"
+  become: yes
   with_items: "{{ jenkins_plugins }}"
   when: jenkins_admin_password | default(false)
   notify: restart jenkins

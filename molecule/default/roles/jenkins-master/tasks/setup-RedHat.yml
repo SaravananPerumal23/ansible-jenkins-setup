@@ -6,23 +6,62 @@
       - initscripts
       - "{{ 'libselinux-python' if ansible_python['version']['major'] < 3 else 'python3-libselinux' }}"
     state: present
+  become: yes
 
+# Using environment to use http_proxy in case of need- Starts
+- name: Setup folder permission
+  file:
+    state: directory
+    path: /etc/yum.repos.d/
+    mode: '0755'
+    recurse: true
+  become: yes
+
+- name: Ensure Jenkins repo is installed with proxy enabled.
+  get_url:
+    url: "{{ jenkins_repo_url }}"
+    dest: /etc/yum.repos.d/jenkins.repo
+  environment: "{{ proxy_environment }}"
+  become: yes
+  when: jenkins_repo_url | default(false) and proxy_environment | default(false)
+
+- name: Download the jenkins repo key.
+  get_url:
+    url: "{{ jenkins_repo_key_url }}"
+    dest: /etc/yum.repos.d/jenkins.io.key
+  environment: "{{ proxy_environment }}"
+  become: yes
+  when: proxy_environment is defined
+
+- name: Install Jenkins rpm key from a file.
+  rpm_key:
+    key: /etc/yum.repos.d/jenkins.io.key
+    state: present
+  become: true
+  when: proxy_environment is defined
+# Using environment to use http_proxy in case of need- Ends
+
+# Without using proxy- Starts
 - name: Ensure Jenkins repo is installed.
   get_url:
     url: "{{ jenkins_repo_url }}"
     dest: /etc/yum.repos.d/jenkins.repo
-  when: jenkins_repo_url | default(false)
+  become: yes
+  when: jenkins_repo_url | default(false) and proxy_environment is undefined
 
 - name: Add Jenkins repo GPG key.
   rpm_key:
     state: present
     key: "{{ jenkins_repo_key_url }}"
-  when: jenkins_repo_url | default(false)
+  become: yes
+  when: jenkins_repo_url | default(false) and proxy_environment is undefined
+# Without using proxy- Ends
 
 - name: Download specific Jenkins version.
   get_url:
     url: "{{ jenkins_pkg_url }}/jenkins-{{ jenkins_version }}-1.1.noarch.rpm"
     dest: "/tmp/jenkins-{{ jenkins_version }}-1.1.noarch.rpm"
+  become: yes
   when: jenkins_version is defined
 
 - name: Check if we downloaded a specific version of Jenkins.
@@ -42,6 +81,7 @@
   package:
     name: jenkins
     state: "{{ jenkins_package_state }}"
+  become: yes
   notify:
     - configure default users
     - configure jnlp

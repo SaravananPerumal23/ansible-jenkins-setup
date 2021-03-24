@@ -17,8 +17,10 @@
 #     - name: "Include Jenkins"
 #       include_role:
 #         name: "jenkins-slave"
+
+
 - name: Converge-JenkinsMaster
-  hosts: jenkins-master-centos
+  hosts: jenkins-master
   tasks:
     - name: "Include java"
       include_role:
@@ -27,7 +29,7 @@
       include_role:
         name: "jenkins-master"
 - name: Converge-JenkinsSlave
-  hosts: jenkins-slave-centos
+  hosts: jenkins-slave
   tasks:
     - name: "Include java"
       include_role:
@@ -35,3 +37,6 @@
     - name: "Include Jenkins"
       include_role:
         name: "jenkins-slave"
+    - name: "Include docker"
+      include_role:
+        name: "docker"

@@ -1,9 +1,10 @@
 ---
 - hosts: jenkins-master
   roles:
-    - {role: java, become: true, become_method: su, become_user: root}
-    - {role: jenkins-master, become: true, become_method: su, become_user: root}
+    - {role: java, become: true }
+    - {role: jenkins-master, become: true }
 - hosts: jenkins-slave
   roles:
-    - {role: java, become: true, become_method: su, become_user: root}
-    - {role: jenkins-slave, become: true, become_method: su, become_user: root}
+    - {role: java, become: true }
+    - {role: jenkins-slave, become: true }
+    - {role: docker, become: true }
