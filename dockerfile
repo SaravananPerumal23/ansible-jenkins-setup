@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:hirsute-20210422
 RUN mkdir -p /var/run/sshd && \
     apt -y update && \
     apt install -y openjdk-8-jdk && \
